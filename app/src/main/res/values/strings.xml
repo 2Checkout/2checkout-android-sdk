@@ -1,0 +1,65 @@
+<resources>
+    <string name="pay_flow_label" translatable="false">Payment</string>
+    <string name="app_name" translatable="false">2CheckoutMobile</string>
+    <string name="change_currency_str" translatable="false">Change\n currency</string>
+    <string name="change_currency_input" translatable="false">Input currency</string>
+    <string name="invalid_currency_str" translatable="false">Invalid Currency</string>
+    <string name="settings_label" translatable="false">Settings</string>
+    <string name="payment_done_label" translatable="false">Payment done</string>
+    <string name="ok_label" translatable="false">Ok</string>
+    <string name="cancel_label" translatable="false">Cancel</string>
+    <string name="close_label" translatable="false">OK</string>
+    <string name="reference_label" translatable="false">Reference</string>
+    <string name="customer_label" translatable="false">Customer</string>
+    <string name="amount_text" translatable="false">Amount</string>
+    <string name="user_message_text" translatable="false">Thank you for your payment</string>
+    <string name="back_to_store" translatable="false">Continue back to store</string>
+    <string name="company_message" translatable="false">Secure payments provided by Verifone</string>
+    <string name="title_settings" translatable="false">Settings</string>
+
+    <string name="store_name" translatable="false">Auto T-Shirt Shop</string>
+    <string name="payments_show_name" translatable="false">Successfully received payment data for %s!</string>
+    <string name="use_paypal_label" translatable="false">Use paypal</string>
+
+    <string name="settings_background_text" translatable="false">Form background color</string>
+    <string name="settings_text_field_text" translatable="false">Text field background color</string>
+    <string name="settings_text_color_input" translatable="false">Input text color</string>
+    <string name="settings_hint_color_text" translatable="false">Hint text color</string>
+    <string name="settings_pay_btn_color" translatable="false">Pay button color</string>
+    <string name="settings_form_title_color" translatable="false">Title text color</string>
+    <string name="settings_checkout_label" translatable="false">Checkout customization</string>
+
+    <string name="settings_merchant_code_hint" translatable="false">Merchant code</string>
+    <string name="settings_card_encryption_key" translatable="false">Merchant secret key</string>
+    <string name="settings_card_payments_url" translatable="false">Card payments url</string>
+
+    <string name="settings_card_payments_tab_tile" translatable="false">Payments parameters</string>
+
+    <string name="save_label" translatable="false">Save</string>
+    <string name="change_lang" translatable="false">Change language</string>
+    <string name="current_lang" translatable="false">Language:</string>
+    <string name="choose_label" translatable="false">Choose language</string>
+    <string name="change_font_text" translatable="false">Checkout font</string>
+    <string name="change_region_text" translatable="false">Region(Environment)</string>
+    <string name="checkout_pay_options" translatable="false">Payment methods</string>
+    <string name="no_payment_options" translatable="false">No payment options selected</string>
+
+    <string name="threeds_auth_enable" translatable="false">Enable 3DS</string>
+    <string-array name="fonts_array">
+        <item>Default</item>
+        <item>Oswald</item>
+        <item>OpenSans</item>
+        <item>Pacifico</item>
+        <item>QuickSand</item>
+        <item>Roboto</item>
+    </string-array>
+
+    <string-array name="regions_array">
+        <item>CST</item>
+        <item>US CST</item>
+        <item>EMEA PROD</item>
+        <item>US PROD</item>
+        <item>NZ PROD</item>
+    </string-array>
+
+</resources>

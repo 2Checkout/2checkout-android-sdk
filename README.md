@@ -1,4 +1,4 @@
-# 2Checkout ANdroid SDK
+# 2Checkout Android SDK
 
 **Building the library using Android Studio**
 
@@ -17,16 +17,17 @@
 
 
 **Show the available payment options(sample code) :**
+```kotlin
+private fun showPaymentOptions() {
+    val payOptionsList = ArrayList<String>(2)
+    payOptionsList.add(TwoCheckoutPaymentOptions.paymentOptionCard)
+    payOptionsList.add(TwoCheckoutPaymentOptions.paymentOptionPayPal)
 
-    private fun showPaymentOptions() {
-        val payOptionsList = ArrayList<String>(2)
-        payOptionsList.add(TwoCheckoutPaymentOptions.paymentOptionCard)
-        payOptionsList.add(TwoCheckoutPaymentOptions.paymentOptionPayPal)
-       
-       
-        val paymentOptionsSheet = TwoCheckoutPaymentOptions(this,payOptionsList,::onPayMethodSelected)
-        paymentOptionsSheet.showPaymentOptionList()
-    }
+
+    val paymentOptionsSheet = TwoCheckoutPaymentOptions(this,payOptionsList,::onPayMethodSelected)
+    paymentOptionsSheet.showPaymentOptionList()
+}
+```
     
     **parameters for TwoCheckoutPaymentOptions class:**
     
@@ -37,74 +38,77 @@
 
  **Example callback method for getting the selected payment option:**
  
- 
-    private fun onPayMethodSelected(payMethod:String) {
-    //selected payment method is received as a string so compare with the predefiend strings as in the sample below
-    //and start the normal payment flow
-        if (payMethod == TwoCheckoutPaymentOptions.paymentOptionPayPal) {
-            startPayPalFlow()
-        } else if (payMethod == TwoCheckoutPaymentOptions.paymentOptionCard) {
-            creditCardPay(true)
-        } 
-    }    
-   
+ ```kotlin
+private fun onPayMethodSelected(payMethod:String) {
+//selected payment method is received as a string so compare with the predefiend strings as in the sample below
+//and start the normal payment flow
+    if (payMethod == TwoCheckoutPaymentOptions.paymentOptionPayPal) {
+        startPayPalFlow()
+    } else if (payMethod == TwoCheckoutPaymentOptions.paymentOptionCard) {
+        creditCardPay(true)
+    } 
+}
+```
 
 **Card Payments**
 **Show the 2Checkout card input screen:**
 
-    val customizationParam = loadFormPreferences()
-        customizationParam.userTextFont = parseFont()
-        customizationParam.userTextFontRes = parseFontResource()
-        val fullPrice = "$itemPrice $currencyTV"
-        setLocation(false)
-        val formConfigData = PaymentConfigurationData(
-            this, //your merchant activity context
-            fullPrice, //full price amount + currency as string to display
-            merchantCode, //your merchant code
-            customizationParam // parameter object to change the card form background , input fields background and text color
-            //while this parameter is required and can't be null it can be left empty, so you don't have to specify any 
-            //customization values and in this case the default colors will be used.
-        )
+```kotlin
+val customizationParam = loadFormPreferences()
+    customizationParam.userTextFont = parseFont()
+    customizationParam.userTextFontRes = parseFontResource()
+    val fullPrice = "$itemPrice $currencyTV"
+    setLocation(false)
+    val formConfigData = PaymentConfigurationData(
+        this, //your merchant activity context
+        fullPrice, //full price amount + currency as string to display
+        merchantCode, //your merchant code
+        customizationParam // parameter object to change the card form background , input fields background and text color
+        //while this parameter is required and can't be null it can be left empty, so you don't have to specify any 
+        //customization values and in this case the default colors will be used.
+    )
 
 
-        val cardPaymentForm = TwoCheckoutPaymentForm(
-            formConfigData,//configuration data for payment form as described above
-            ::showLoadingSpinner,//callback function that gets called when the blocking api call to retrieve the card payment token  begins
-            //typically this will be used to display a loading message or dialog
-            ::onCreditCardInput //callback function that gets called when the blocking get card payment token api call returns
-        )
-       
-        //call this function to show the card form after initialization
-        cardPaymentForm.displayPaymentForm()
+    val cardPaymentForm = TwoCheckoutPaymentForm(
+        formConfigData,//configuration data for payment form as described above
+        ::showLoadingSpinner,//callback function that gets called when the blocking api call to retrieve the card payment token  begins
+        //typically this will be used to display a loading message or dialog
+        ::onCreditCardInput //callback function that gets called when the blocking get card payment token api call returns
+    )
+
+    //call this function to show the card form after initialization
+    cardPaymentForm.displayPaymentForm()
+```
         
 **sample callback method for receiving payment card token (::onCreditCardInput) and startin the card payment flow api call**
-        
-        private fun onCreditCardInput(cardPaymentToken:String) {
-            if (cardPaymentToken.isEmpty()){
-                progressDialog.dismiss()
-                //if card payment token is empty display an error message here
-                return
-            }
-            
-            //card payment token received so start normal card payment flow
-            //more details about 2co card payment flow can be found here: link!
-            
-            val ordersCardPayment = OrdersCardPaymentAPI(currencyTV,false,::onCardPaymentComplete)
-            val httpAuthAPI = HttpAuthenticationAPI()
-            httpAuthAPI.secretKey = SettingsActivity.getMerchantSecretKey(this)
-            httpAuthAPI.merchantCode = SettingsActivity.getMerchantCode(this)
-            try {
-                val headersTemp = httpAuthAPI.getHeaders()
-                ordersCardPayment.overridePaymentURL(SettingsActivity.getCardPaymentsUrl(this))
-                ordersCardPayment.authHeaders = headersTemp
-                ordersCardPayment.launchAPI(cardPaymentToken)
-            } catch (e:Exception) {
-                e.printStackTrace()
-            }
+```kotlin
+private fun onCreditCardInput(cardPaymentToken:String) {
+    if (cardPaymentToken.isEmpty()){
+        progressDialog.dismiss()
+        //if card payment token is empty display an error message here
+        return
     }
+
+    //card payment token received so start normal card payment flow
+    //more details about 2co card payment flow can be found here: link!
+
+    val ordersCardPayment = OrdersCardPaymentAPI(currencyTV,false,::onCardPaymentComplete)
+    val httpAuthAPI = HttpAuthenticationAPI()
+    httpAuthAPI.secretKey = SettingsActivity.getMerchantSecretKey(this)
+    httpAuthAPI.merchantCode = SettingsActivity.getMerchantCode(this)
+    try {
+        val headersTemp = httpAuthAPI.getHeaders()
+        ordersCardPayment.overridePaymentURL(SettingsActivity.getCardPaymentsUrl(this))
+        ordersCardPayment.authHeaders = headersTemp
+        ordersCardPayment.launchAPI(cardPaymentToken)
+    } catch (e:Exception) {
+        e.printStackTrace()
+    }
+}
+```
     
 **sample function for retrieving 2CO card order payment result**
-         
+```kotlin     
     private fun onCardPaymentComplete(result:String) {
         progressDialog.dismiss()
         if(result.isEmpty()){
@@ -152,11 +156,12 @@
         transactionRefNo = ""
         saveRefNO()
     }
+```
         
 **sample 3ds flow for 2CO**
 
     sample for showing the 3ds auth screen when 3ds url is present in the 2CO card payment response.
-    
+```kotlin
     private fun startThreedsAuth(threedsUrl:String) {
         if(threedsUrl.isEmpty()){
             progressDialog.dismiss()
@@ -197,10 +202,10 @@
     }
     
     }
-    
+```
     
 **explained sample code for extracting the 3ds auth url from carp payment api response:** 
-    
+```kotlin
     private fun getThreedsUrl(response: String): String {
         val responseJson = JSONObject(response)
         var token = ""
@@ -220,21 +225,26 @@
         //the 3ds auth url will be constructed by adding up the Href string and avng8apitoken like in the sample below
         return  Href + "?avng8apitoken=$token"
     }
+```
     
     
 **Card tokenization API**
 
 The TwoCheckoutPaymentForm class contains a method that can be used to generate a payment token based on provided card data 
-
+```kotlin
 fun getCardPaymentToken(merchantCode:String,cardInputObject: CreditCardInputResult,onTokenReady: (token:String) -> Unit)
-merchantCode //your merchant code 
-cardInputObject //data object that contains all the required card data for tokenization(card nr, cvv, expiryData, name)
-onTokenReady //simple callback funtion that will be called by 2CO sdk with the token parameter once the process is complete
+```
+
+`merchantCode //your merchant code`
+
+`cardInputObject //data object that contains all the required card data for tokenization(card nr, cvv, expiryData, name)`
+
+`onTokenReady //simple callback funtion that will be called by 2CO sdk with the token parameter once the process is complete`
 
 Please note that this is a blocking function that needs to run on background thread.
 
 The code sample below explains how this function is used:
-
+```kotlin
  val cardInputObject = CreditCardInputResult()
         cardInputObject.name = "John Smith"
         val cardPayData = PayerCardData()
@@ -243,34 +253,30 @@ The code sample below explains how this function is used:
         cardPayData.cvv ="" //card cvc cvv
         cardInputObject.cardData = cardPayData
         TwoCheckoutPaymentForm.getCardPaymentToken(SettingsActivity.getMerchantCode(this),cardInputObject,::onCreditCardInput)
-    
+```    
     
 **Paypal payment flow** 
 
-    //Starting paypal transaction shown in the code sample below
+   Start paypal initial api call (initialize the transaction and get the paypal authorization link)
+   https://app.swaggerhub.com/apis-docs/2Checkout-API/api-rest_documentation/6.0#/Order/put_paymentmethods_PAYPAL_EXPRESS_redirecturl_
     
-        //Start paypal initial api call (initialize the transaction and get the paypal authorization link)
-        //more details about this http api call can be found here: 
-        
-        "https://app.swaggerhub.com/apis-docs/2Checkout-API/api-rest_documentation/6.0#/Order/put_paymentmethods_PAYPAL_EXPRESS_redirecturl_"
-        
-        val ordersPaypalPayment = OrdersCardPaymentAPI(currencyTV,true,::onPaypalFlowComplete)
-        val httpAuthAPI = HttpAuthenticationAPI()
-        httpAuthAPI.secretKey = SettingsActivity.getMerchantSecretKey(this)
-        httpAuthAPI.merchantCode = SettingsActivity.getMerchantCode(this)
-        try {
-            val headersTemp = httpAuthAPI.getHeaders()
-            ordersPaypalPayment.authHeaders = headersTemp
-            ordersPaypalPayment.launchAPI("")
-        } catch (e:Exception) {
-            progressDialog.dismiss()
-            ErrorDisplayDialog.newInstance("Paypal error","Invalid key").show(supportFragmentManager,"error")
-            e.printStackTrace()
-        }
-    
-    //After api call completes with success we can retrieve the paypal authorization link. 
-    With this authorization link if present we can launch paypal authentication flow from 2CO sdk like in the sample code below:
-    
+```kotlin
+    val ordersPaypalPayment = OrdersCardPaymentAPI(currencyTV,true,::onPaypalFlowComplete)
+    val httpAuthAPI = HttpAuthenticationAPI()
+    httpAuthAPI.secretKey = SettingsActivity.getMerchantSecretKey(this)
+    httpAuthAPI.merchantCode = SettingsActivity.getMerchantCode(this)
+    try {
+        val headersTemp = httpAuthAPI.getHeaders()
+        ordersPaypalPayment.authHeaders = headersTemp
+        ordersPaypalPayment.launchAPI("")
+    } catch (e:Exception) {
+        progressDialog.dismiss()
+        ErrorDisplayDialog.newInstance("Paypal error","Invalid key").show(supportFragmentManager,"error")
+        e.printStackTrace()
+    }
+```    
+After api call completes with success we can retrieve the paypal authorization link. With this authorization link if present we can launch paypal authentication flow from 2CO SDK like in the sample code below:
+```kotlin    
         if(paypalUrl.isEmpty()){
             progressDialog.dismiss()
         }
@@ -316,6 +322,6 @@ The code sample below explains how this function is used:
                 }
             return actResLauncher
         }
-        
+```        
         
     

@@ -13,6 +13,7 @@ class PaymentConfigurationData(
     var displayPrice:String= price
     var payButtonText:String = ""
     var merchantCodeParam:String = merchantCode
+    var hideCard = false
     var displayCustomization: FormUICustomizationData = displayUICustomization
 
 }

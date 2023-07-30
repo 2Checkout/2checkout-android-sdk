@@ -21,6 +21,8 @@ internal class PaypalWebScreen:AppCompatActivity() {
         mPaypalWebClient = PayPalWebClient(::onPaypalFlowDone)
         paypalWebView.webViewClient = mPaypalWebClient
         paypalWebView.settings.javaScriptEnabled = true
+        mPaypalWebClient.successUrl = intent.getStringExtra(PaypalStarter.keyPaymentSuccessURL)?:""
+        mPaypalWebClient.failUrl = intent.getStringExtra(PaypalStarter.keyPaymentFailURL)?:""
         paypalWebView.loadUrl(urlToLoad)
     }
 

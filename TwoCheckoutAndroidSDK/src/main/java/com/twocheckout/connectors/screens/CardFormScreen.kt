@@ -6,10 +6,14 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.*
+import android.text.method.PasswordTransformationMethod
 import android.view.*
 import android.view.View.*
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.widget.*
+import androidx.appcompat.widget.AppCompatButton
+import androidx.appcompat.widget.AppCompatEditText
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
@@ -20,12 +24,42 @@ import com.twocheckout.connectors.datapack.CreditCardInputResult
 import com.twocheckout.connectors.datapack.FormUICustomizationData
 import com.twocheckout.connectors.datapack.PayerCardData
 import com.twocheckout.connectors.payments.TwoCOCardValidator
+import java.io.Serializable
+
+
+class HideInputData : PasswordTransformationMethod() {
+
+    companion object {
+        const val HIDE_CHAR = '*'
+    }
+
+    override fun getTransformation(source: CharSequence, view: View): CharSequence {
+        return DataCharSequence(source)
+    }
+
+    inner class DataCharSequence (private val source: CharSequence) : CharSequence {
+
+        override val length: Int
+            get() = source.length
+
+        override fun get(index: Int): Char = HIDE_CHAR
+
+        override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+            return source.subSequence(startIndex, endIndex)
+        }
+    }
+}
 
 
 internal class CardFormScreen():DialogFragment() {
 
+    class CallbackActionKeeper(var onCardInput: (inputResult:CreditCardInputResult) -> Unit):
+        Serializable
+
+
     constructor(ctx: Context,
                 customizationParam: FormUICustomizationData,
+                hideCard:Boolean,
                 displayPrice: String,
                 payButtonLabel:String,
                 onCardInput: (inputResult:CreditCardInputResult) -> Unit
@@ -35,10 +69,12 @@ internal class CardFormScreen():DialogFragment() {
         price = displayPrice
         customizationData = customizationParam
         onCardInputDone = onCardInput
+        callbackKeeper = CallbackActionKeeper(onCardInputDone)
         payButtonText = payButtonLabel
+        hideCardData = hideCard
     }
 
-
+    private var hideCardData = false
     private var colorCodeTitle: Int = -1
     private var colorCodePayBtn: Int = -1
     private var colorCodeHint: Int = Color.BLACK
@@ -50,6 +86,7 @@ internal class CardFormScreen():DialogFragment() {
     private var showFieldErrors:Boolean = false
     private var currentCardExpiryString = ""
     private var payButtonText = ""
+    var callbackKeeper:CallbackActionKeeper? = null
     lateinit var cardNRHintTV:AppCompatTextView
     lateinit var expiryDateHintTV:AppCompatTextView
     lateinit var cvvNRHintTV:AppCompatTextView
@@ -137,6 +174,10 @@ internal class CardFormScreen():DialogFragment() {
         discoverCardTypeIM.visibility = GONE
         jcbCardTypeIM.visibility = GONE
         var showPrice = ""
+
+        if (hideCardData) {
+            setHiddenCardData()
+        }
         if (price.isNotEmpty()){
             showPrice = getString(R.string.submitPay)+" "+ price
             payButton.text = showPrice
@@ -585,6 +626,7 @@ internal class CardFormScreen():DialogFragment() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT
         )
+        if(callbackKeeper == null) dismiss()
     }
 
     private fun customizeForm() {
@@ -680,10 +722,14 @@ internal class CardFormScreen():DialogFragment() {
         outState.putString(TwoCheckoutPaymentForm.keyInputTextColor,customizationData.formInputTextColor)
         outState.putString(TwoCheckoutPaymentForm.keyTitleTextColor,customizationData.formTitleTextColor)
         outState.putString(TwoCheckoutPaymentForm.keyDisplayPrice,price)
+        outState.putBoolean("hideCardData", hideCardData)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            hideCardData = savedInstanceState.getBoolean("hideCardData", false)
+        }
         val temp = savedInstanceState?.getInt(TwoCheckoutPaymentForm.keyTextFontID)?:-1
         if (temp>0) customizationData.userTextFontRes = temp
 
@@ -726,5 +772,17 @@ internal class CardFormScreen():DialogFragment() {
 
         setupUserFontResource()
         customizeForm()
+    }
+
+    fun setHiddenCardData() {
+        cardNumberInput.transformationMethod = HideInputData()
+        cvcNumberInput.transformationMethod = HideInputData()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (hideCardData) {
+            setHiddenCardData()
+        }
     }
 }

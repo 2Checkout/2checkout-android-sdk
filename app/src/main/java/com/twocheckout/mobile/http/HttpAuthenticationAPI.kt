@@ -55,11 +55,11 @@ class HttpAuthenticationAPI {
         val gmtDate: String = df.format(Date())
         val finalString: String =
             ""+merchantCode.length + merchantCode + gmtDate.length.toString() + gmtDate
-        hash = hmacDigest(finalString, this.secretKey, "HmacMD5")
+        hash = hmacDigest(finalString, this.secretKey, "HmacSHA256")
         headers["Content-Type"] = "application/json"
         headers["Accept"] = "application/json"
         headers["X-Avangate-Authentication"] =
-            "code=\"" + merchantCode + "\" date=\"" + gmtDate + "\" hash=\"" + hash.toString() + "\""
+            "code=\"" + merchantCode + "\" date=\"" + gmtDate + "\" hash=\"" + hash.toString() + "\" algo=\"sha256\""
         return headers
     }
 }

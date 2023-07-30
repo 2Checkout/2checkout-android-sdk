@@ -31,7 +31,7 @@ private fun showPaymentOptions() {
     
     **parameters for TwoCheckoutPaymentOptions class:**
     
-    this // activty context
+    this // activity context
     payOptionList // ArrayList that contains the payment options you want to display to the user
     ::onPayMethodSelected // callback method to receive the payment option selected by the user
     
@@ -80,7 +80,7 @@ val customizationParam = loadFormPreferences()
     cardPaymentForm.displayPaymentForm()
 ```
         
-**sample callback method for receiving payment card token (::onCreditCardInput) and startin the card payment flow api call**
+**sample callback method for receiving payment card token (::onCreditCardInput) and starting the card payment flow api call**
 ```kotlin
 private fun onCreditCardInput(cardPaymentToken:String) {
     if (cardPaymentToken.isEmpty()){
@@ -185,7 +185,7 @@ private fun onCreditCardInput(cardPaymentToken:String) {
                 if (result.resultCode == ThreedsManager.threedsResultCode) {
                     if (result.data!=null) {
                         result.data?.let {
-                            //our sdk will return the transaction reference number here after the 3ds is completes
+                            //our sdk will return the transaction reference number here after the 3ds process completes
                             //note that this receiver only indicates that the 3ds flow is over and does not indicate if it was succesfull or not
                             //so another api call to get the status of the transaction is required
                             val refNO = it.getStringExtra(ThreedsManager.keyRefNO)?:""
@@ -204,7 +204,7 @@ private fun onCreditCardInput(cardPaymentToken:String) {
     }
 ```
     
-**explained sample code for extracting the 3ds auth url from carp payment api response:** 
+**explained sample code for extracting the 3ds auth url from card payment api response:** 
 ```kotlin
     private fun getThreedsUrl(response: String): String {
         val responseJson = JSONObject(response)
@@ -235,11 +235,11 @@ The TwoCheckoutPaymentForm class contains a method that can be used to generate 
 fun getCardPaymentToken(merchantCode:String,cardInputObject: CreditCardInputResult,onTokenReady: (token:String) -> Unit)
 ```
 
-`merchantCode //your merchant code`
+`merchantCode - your merchant code`
 
-`cardInputObject //data object that contains all the required card data for tokenization(card nr, cvv, expiryData, name)`
+`cardInputObject - data object that contains all the required card data for tokenization(card nr, cvv, expiryData, name)`
 
-`onTokenReady //simple callback funtion that will be called by 2CO sdk with the token parameter once the process is complete`
+`onTokenReady - simple callback funtion that will be called by 2CO sdk with the token parameter once the process is complete`
 
 Please note that this is a blocking function that needs to run on background thread.
 
@@ -252,7 +252,7 @@ The code sample below explains how this function is used:
         cardPayData.creditCard = ""// card nr
         cardPayData.cvv ="" //card cvc cvv
         cardInputObject.cardData = cardPayData
-        TwoCheckoutPaymentForm.getCardPaymentToken(SettingsActivity.getMerchantCode(this),cardInputObject,::onCreditCardInput)
+        TwoCheckoutPaymentForm.getCardPaymentToken(SettingsActivity.getMerchantCode(this,cardInputObject,::onCreditCardInput))
 ```    
     
 **Paypal payment flow** 
@@ -285,15 +285,19 @@ After api call completes with success we can retrieve the paypal authorization l
         //PaypalStarter(ctx: Context, paypalURL: String)
         ctx : Merchant activity context
         paypalURL : paypal authorization url received in the initial api call
+
+        //sample code for starting the paypal screen
+        if(paypalUrl.isEmpty()){
+            progressDialog.dismiss()
+        }
         
         val mPaypalStarter = PaypalStarter(this,paypalUrl)
         
-        //display the paypal authorization screen from 2CO sdk
-        mPaypalStarter.displayPaypalScreen(paypalReceiver)
+        //display the paypal authorization screen from 2CO sdk, use one of the following method signatures
+        mPaypalStarter.displayPaypalScreen(paypalReceiver,"www.2checkout.com","www.2checkout.com")
         
         displayPaypalScreen(resultObject: ActivityResultLauncher<Intent>)
         //resultObject - ActivityResultLauncher<Intent> used to retrieve the result from 2CO sdk
-        
         
         //Sample code for creating the object to receive the result
         

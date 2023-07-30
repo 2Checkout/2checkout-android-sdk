@@ -14,14 +14,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatTextView
 import com.google.android.material.textfield.TextInputEditText
-import com.twocheckout.connectors.payments.card.ThreedsManager
-import com.twocheckout.mobile.dialogs.ErrorDisplayDialog
+
 
 class SettingsActivity : AppCompatActivity() {
 
 
     lateinit var showCardCheck: CheckBox
     lateinit var showPaypalCheck: CheckBox
+    lateinit var showHideCardDataCheck: CheckBox
     lateinit var saveButton:AppCompatButton
     lateinit var cancelButton:AppCompatButton
 
@@ -48,11 +48,15 @@ class SettingsActivity : AppCompatActivity() {
     val cardPaymentsUrlInput by lazy {findViewById<TextInputEditText>(R.id.card_payments_url_edit)}
     val selectLanguageBtn by lazy { findViewById<AppCompatButton>(R.id.change_lang_btn) }
     val selectedLangDisplay by lazy { findViewById<AppCompatTextView>(R.id.setup_language_display) }
+    val checkHideCard by lazy { findViewById<CheckBox>(R.id.checkbox_option_hide_card) }
+
     val langScreenReceiver = createLanguageSelectReceiver()
+
 
     companion object{
         const val keyMerchantSecret = "merchant_secret_key"
         const val keyMerchantCode = "merchant_code"
+        const val keyHideCardData = "hide_card_data"
         const val keySaveBackgroundColor="pref_background_color"
         const val keySaveInputTextColor="pref_input_text_color"
         const val keySaveTextFieldsColor="pref_text_fields_color"
@@ -81,7 +85,15 @@ class SettingsActivity : AppCompatActivity() {
             return sharedPref.getBoolean("key_store_show_paypal",false)
         }
 
+        fun saveHideCardData(ctx:Context,showHideCardData:Boolean) {
+            val sp = ctx.getSharedPreferences("checkout_data", Context.MODE_PRIVATE)
+            sp.edit().putBoolean(keyHideCardData,showHideCardData).apply()
+        }
 
+        fun getHideCardData(ctx:Context):Boolean{
+            val sharedPref = ctx.getSharedPreferences("checkout_data", Context.MODE_PRIVATE)
+            return sharedPref.getBoolean(keyHideCardData,false)
+        }
 
         fun getCardPaymentsUrl(ctx:Context):String {
             val sharedPref = ctx.getSharedPreferences("payment_settings_data", Context.MODE_PRIVATE)
@@ -97,6 +109,7 @@ class SettingsActivity : AppCompatActivity() {
             val sharedPref = ctx.getSharedPreferences("payment_settings_data", Context.MODE_PRIVATE)
             return sharedPref.getString(keyMerchantCode,"")?:""
         }
+
         fun getStoredFont(ctx:Context):String {
             val sharedPref = ctx.getSharedPreferences("checkout_data", Context.MODE_PRIVATE)
             return sharedPref.getString("key_store_font","")?:""
@@ -112,10 +125,12 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(R.layout.settings_screen_layout)
         showCardCheck = findViewById(R.id.checkbox_option_card)
         showPaypalCheck = findViewById(R.id.checkbox_option_paypal)
+        showHideCardDataCheck = findViewById(R.id.checkbox_option_hide_card)
         saveButton = findViewById(R.id.settings_save_btn)
         cancelButton = findViewById(R.id.settings_cancel_btn)
         showCardCheck.isChecked = getShowCard(this)
         showPaypalCheck.isChecked = getShowPaypal(this)
+        showHideCardDataCheck.isChecked = getHideCardData(this)
 
         backgroundColorInput = findViewById(R.id.form_background_input)
         backgroundColorSample = findViewById(R.id.form_background_sample)
@@ -147,6 +162,7 @@ class SettingsActivity : AppCompatActivity() {
         saveButton.setOnClickListener {
             saveShowCard(this,showCardCheck.isChecked)
             saveShowPaypal(this,showPaypalCheck.isChecked)
+            saveHideCardData(this,showHideCardDataCheck.isChecked)
             saveFormDetails()
             savePaymentDetails()
             finish()
@@ -246,6 +262,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun savePaymentDetails(){
         val sharedPref = getSharedPreferences("payment_settings_data", Context.MODE_PRIVATE)
         sharedPref.edit().putString(keyMerchantCode,merchantCodeInput.text.toString()).apply()
+        sharedPref.edit().putBoolean(keyHideCardData,checkHideCard.isChecked).apply()
         sharedPref.edit().putString(keyMerchantSecret,merchantSecretInput.text.toString()).apply()
         sharedPref.edit().putString(keyCardPaymentsUrl,cardPaymentsUrlInput.text.toString()).apply()
     }
@@ -263,6 +280,7 @@ class SettingsActivity : AppCompatActivity() {
     private fun loadPaymentDetails(){
         val sharedPref = getSharedPreferences("payment_settings_data", Context.MODE_PRIVATE)
         merchantCodeInput.setText(sharedPref.getString(keyMerchantCode,""))
+        checkHideCard.isChecked = sharedPref.getBoolean(keyHideCardData,false)
         merchantSecretInput.setText(sharedPref.getString(keyMerchantSecret,""))
         cardPaymentsUrlInput.setText(sharedPref.getString(keyCardPaymentsUrl,""))
     }

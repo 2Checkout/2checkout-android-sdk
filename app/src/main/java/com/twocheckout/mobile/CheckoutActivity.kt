@@ -1,6 +1,7 @@
 package com.twocheckout.mobile
 
 
+import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -67,6 +68,7 @@ open class CheckoutActivity : AppCompatActivity() {
     private val threedsReceiver = createPaymentsReceiver()
     private val paypalReceiver = createPaypalReceiver()
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
@@ -212,6 +214,9 @@ open class CheckoutActivity : AppCompatActivity() {
             customizationParam
         )
 
+        if (SettingsActivity.getHideCardData(this)){
+            formConfigData.hideCard = true
+        }
 
         val cardPaymentForm = TwoCheckoutPaymentForm(
             formConfigData,::showLoadingSpinner,
@@ -331,7 +336,7 @@ open class CheckoutActivity : AppCompatActivity() {
             progressDialog.dismiss()
         }
         val mPaypalStarter = PaypalStarter(this,paypalUrl)
-        mPaypalStarter.displayPaypalScreen(paypalReceiver)
+        mPaypalStarter.displayPaypalScreen(paypalReceiver,"www.2checkout.com","www.2checkout.com")
     }
 
     private fun getThreedsUrl(response: String): String {

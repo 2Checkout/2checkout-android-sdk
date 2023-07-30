@@ -152,12 +152,12 @@ class OrdersCardPaymentAPI(currency:String,isPaypal:Boolean, onSendResultComplet
         if (!isPaypalTransaction) {
             paymentMethod.put("EesToken", eesToken)
             paymentDetails.put("Type", "EES_TOKEN_PAYMENT")
-            paymentMethod.put("Vendor3DSReturnURL", "www.test.com")
-            paymentMethod.put("Vendor3DSCancelURL", "www.test.com")
+            paymentMethod.put("Vendor3DSReturnURL", "www.2checkout.com")
+            paymentMethod.put("Vendor3DSCancelURL", "www.2checkout.com")
         } else {
             paymentDetails.put("Type", "PAYPAL")
-            paymentMethod.put("ReturnURL", "https://www.success.com")
-            paymentMethod.put("CancelURL", "https://www.fail.com")
+            paymentMethod.put("ReturnURL", "https://www.2checkout.com")
+            paymentMethod.put("CancelURL", "https://www.2checkout.com")
         }
 
         paymentDetails.put("Currency",currencyVal)

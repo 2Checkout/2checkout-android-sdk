@@ -17,7 +17,6 @@ class TwoCheckoutPaymentForm(displayData: PaymentConfigurationData,onShowLoading
         val keyPayButtonColor = "payButtonColor"
         val keyTextFontID = "textFontResourceID"
         val keyDisplayPrice = "displayPrice"
-        val keyCallbackCardInputResult = "keyCallbackCardInput"
 
         fun getCardPaymentToken(merchantCode:String,cardInputObject: CreditCardInputResult,onTokenReady: (token:String) -> Unit) {
             val cardPayments = CardPaymentInit(onTokenReady)
@@ -43,7 +42,7 @@ class TwoCheckoutPaymentForm(displayData: PaymentConfigurationData,onShowLoading
         ctx as AppCompatActivity
         mCtx = displayData.activityContext
         merchantCode = displayData.merchantCodeParam
-        cardInputScreen = CardFormScreen(ctx,displayData.displayCustomization,displayData.displayPrice,displayData.payButtonText,::onCardInputComplete)
+        cardInputScreen = CardFormScreen(ctx,displayData.displayCustomization,displayData.hideCard,displayData.displayPrice,displayData.payButtonText,::onCardInputComplete)
         mFragmentManager = ctx.supportFragmentManager
     }
 

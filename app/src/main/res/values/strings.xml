@@ -32,6 +32,7 @@
     <string name="settings_merchant_code_hint" translatable="false">Merchant code</string>
     <string name="settings_card_encryption_key" translatable="false">Merchant secret key</string>
     <string name="settings_card_payments_url" translatable="false">Card payments url</string>
+    <string name="settings_hide_card" translatable="false">Hide card data</string>
 
     <string name="settings_card_payments_tab_tile" translatable="false">Payments parameters</string>
 
